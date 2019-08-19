@@ -27,89 +27,43 @@ player = Player("Name", world.startingRoom)
 # return all the longest paths, plus directions 
 
 def graphTraversal(graph, startingRoom):
-    start = {startingRoom: graph[startingRoom]}
 
     s = Stack()
     q = Queue()
-    s.push(start)
+    s.push(startingRoom)
      # Create a Set to store visited vertices
     visited = []
-    visitCount = 0 
 
     # create a separate path to keep track of all the directions taken
     path = [{startingRoom: "Start"}]
-    prevRoom = {}  
+    newGraph = { startingRoom: {"n": "?", "s": "?", "w": "?", "e": "?"} }
 
     while s.size() > 0:
     # Pop the first room 
-        v = s.pop()
-        key = list(v.keys())[0]
-        # print("Our key", key)
+        currentRoom = s.pop()
         # If that vertex has not been visited...
-        print("prev room, line 49", prevRoom)
-        print("depth first search", v)
-        if key not in visited:
-            print("------------visiting!---------", key)
-            visited.append(key)
-            visitCount += 1
-            # print(visitCount)
+        if currentRoom not in visited:
+            visited.append(currentRoom)
            
-            currentDirection = None 
-            if len(prevRoom) > 0:
-                print(prevRoom)
-                old_directions = list(prevRoom.items())[0][1][1]
-                for direction in old_directions:
-                    if old_directions[direction] == key:
-                        print("next direction", direction)
-                        path.append(direction)
-                        currentDirection = direction 
-                        break 
+            for direction in newGraph[currentRoom]:
+                if newGraph[currentRoom][direction] == "?":
+                    s.push(graph[currentRoom][direction])
+                    break
             
-            for direction in v[key][1]:
-                # continue searching for new rooms to visit through depth
-                # if direction == currentDirection:  
-                    print("adding direction to queue", direction)
-                    new_room = v[key][1][direction]
-                    s.push({new_room: graph[new_room]})
-                    prevRoom = {key: v[key]}
-            print("-----end-visiting---", key)
-
-        elif len(visited) == len(graph):
-            # stop the function if our depth first has finished visiting every node
-            break
-        else: 
-            q.enqueue(v)
+            # else, start breath first search 
+            q.enqueue(currentRoom)
             while q.size() > 0:
                 node = q.dequeue()
-                print("breath first search", node)
-                key = list(node.keys())[0]
 
-                if key in visited:
-                    visitCount += 1
-                    directions = list(graph[key][1].items())
-                    old_directions = list(prevRoom.items())[0][1][1]
-                        
-                    currDir = None 
-                    for direction in old_directions:
-                        if old_directions[direction] == key:
-                            path.append(direction)
-                            currDir = direction
-                            break 
-
-                    if currDir != None:
-                        print("direction in bfs", currDir)
-                    for direction in directions:
-                        q.enqueue({direction[1]: graph[direction[1]]})
-
-                else: 
-                    s = Stack()
-                    q = Queue()
-                    start = {key: graph[key]}
-                    s.push(start)
-                    prevRoom = start
-                    break 
-                prevRoom = node 
-        prevRoom = v 
+                if node in visited:
+                    for direction in newGraph[currentRoom]:
+                        if newGraph[currentRoom][direction] == "?":
+                            s.push(graph[currentRoom][direction])
+                            break
+                        else:
+                            q.enqueue(graph[currentRoom][direction])
+        elif len(visited) == len(graph):
+            break 
     print(visited)
     return path[1:]
 
