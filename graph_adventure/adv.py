@@ -38,7 +38,7 @@ def graphTraversal(graph, startingRoom):
     path = [{startingRoom: "Start"}]
     newGraph = { startingRoom: {"n": "?", "s": "?", "w": "?", "e": "?"} }
 
-    while s.size() > 0:
+    while len(visited) < len(graph):
     # Pop the first room 
         currentRoom = s.pop()
         # If that vertex has not been visited...
@@ -46,45 +46,55 @@ def graphTraversal(graph, startingRoom):
             visited.append(currentRoom)
             newGraph[currentRoom] = {"n": "?", "s": "?", "w": "?", "e": "?"}
             print(newGraph)
-            print("currentRoom", currentRoom)
+            print("currentRoom at DFS", currentRoom)
             for direction in newGraph[currentRoom]:
                 if (newGraph[currentRoom][direction] == "?") & (direction in graph[currentRoom][1].keys()):
-                    print("enter this room", currentRoom, direction)
                     newGraph[currentRoom][direction] = graph[currentRoom][1][direction]
                     s.push(graph[currentRoom][1][direction])
                     path.append(direction)
                     break
                 elif (newGraph[currentRoom][direction] == "?") & (direction not in graph[currentRoom][1].keys()):
-                    print("This room does not exist")
                     newGraph[currentRoom][direction] = None
                     print(newGraph)
-            
-            # else, start breath first search 
-            if len(visited) == len(graph):
-                break
         else:
             q.enqueue(currentRoom)
-            print("searching", newGraph)
+            print("searching", newGraph, visited)
+            visitedBFS = []
             while q.size() > 0:
-                node = q.dequeue()
-
-                if node in visited:
+                currentRoom = q.dequeue()
+               
+                if currentRoom in visited and currentRoom not in visitedBFS:
+                    visitedBFS.append(currentRoom)
                     for direction in newGraph[currentRoom]:
-                        print("current room", currentRoom, "current direction", direction, "Direct to which room", newGraph[currentRoom][direction])
                         if (newGraph[currentRoom][direction] == "?") & (direction in graph[currentRoom][1].keys()):
-                            s.push(graph[currentRoom][1][direction])
                             path.append(direction)
+                            newGraph[currentRoom][direction] = graph[currentRoom][1][direction]
+                            # make sure we fill out the path traversals of the opposite direction so that
+                            #  
+                            # we prevent ourselves from going backwards LOL - i.e. DFS back to the wrong direction
+                            nextRoomToVenture = graph[currentRoom][1][direction]
+                            if direction == "n":
+                                
+                            elif direction == "s":
+
+                            elif direction == "w":
+
+                            elif direction == "e":
+
+
+                            s.push(graph[currentRoom][1][direction])
+                            print("currentRoom during BFS after finding nearest undiscovered room", currentRoom)
+                            print("adding direction", direction, "at", newGraph[currentRoom][direction])
+                            print("currentPath", path, "currentRoom", currentRoom, "and newGraph", newGraph)
                             break
                         elif direction not in graph[currentRoom][1].keys():
                             newGraph[currentRoom][direction] = None
                         elif direction in graph[currentRoom][1].keys():
-                            # print(graph[currentRoom][1])
+                            # path.append(direction)
                             newGraph[currentRoom][direction] = graph[currentRoom][1][direction]
                             q.enqueue(graph[currentRoom][1][direction])
-                            # path.append(direction)
-        if len(visited) == len(graph):
-            break 
-    print(visited)
+                    
+    print(visited, len(graph), len(visited))
     return path[1:]
 
 # print(graphTraversal(roomGraph, 0))
