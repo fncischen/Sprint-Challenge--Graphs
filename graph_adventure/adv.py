@@ -44,25 +44,45 @@ def graphTraversal(graph, startingRoom):
         # If that vertex has not been visited...
         if currentRoom not in visited:
             visited.append(currentRoom)
-           
+            newGraph[currentRoom] = {"n": "?", "s": "?", "w": "?", "e": "?"}
+            print(newGraph)
+            print("currentRoom", currentRoom)
             for direction in newGraph[currentRoom]:
-                if newGraph[currentRoom][direction] == "?":
-                    s.push(graph[currentRoom][direction])
+                if (newGraph[currentRoom][direction] == "?") & (direction in graph[currentRoom][1].keys()):
+                    print("enter this room", currentRoom, direction)
+                    newGraph[currentRoom][direction] = graph[currentRoom][1][direction]
+                    s.push(graph[currentRoom][1][direction])
+                    path.append(direction)
                     break
+                elif (newGraph[currentRoom][direction] == "?") & (direction not in graph[currentRoom][1].keys()):
+                    print("This room does not exist")
+                    newGraph[currentRoom][direction] = None
+                    print(newGraph)
             
             # else, start breath first search 
+            if len(visited) == len(graph):
+                break
+        else:
             q.enqueue(currentRoom)
+            print("searching", newGraph)
             while q.size() > 0:
                 node = q.dequeue()
 
                 if node in visited:
                     for direction in newGraph[currentRoom]:
-                        if newGraph[currentRoom][direction] == "?":
-                            s.push(graph[currentRoom][direction])
+                        print("current room", currentRoom, "current direction", direction, "Direct to which room", newGraph[currentRoom][direction])
+                        if (newGraph[currentRoom][direction] == "?") & (direction in graph[currentRoom][1].keys()):
+                            s.push(graph[currentRoom][1][direction])
+                            path.append(direction)
                             break
-                        else:
-                            q.enqueue(graph[currentRoom][direction])
-        elif len(visited) == len(graph):
+                        elif direction not in graph[currentRoom][1].keys():
+                            newGraph[currentRoom][direction] = None
+                        elif direction in graph[currentRoom][1].keys():
+                            # print(graph[currentRoom][1])
+                            newGraph[currentRoom][direction] = graph[currentRoom][1][direction]
+                            q.enqueue(graph[currentRoom][1][direction])
+                            # path.append(direction)
+        if len(visited) == len(graph):
             break 
     print(visited)
     return path[1:]
